@@ -1,44 +1,49 @@
 import java.util.ArrayList;
 
-import image.*;
+import image.ImageProcessor;
 import lib.Picture;
-import detection.*;
 import model.Blob;
+import detection.BlobDetector;
+import detection.BeadFinder;
+import tracking.BeadTracker;
+import java.io.File;
+import java.util.ArrayList;
 
 public class Main {
-    private final ImageLoader loader;
-    private final Thresholder thresholder;
-    private final BlobDetector detector;
-    private final BeadFilter beadFilter;
-
-    public Main(ImageLoader loader, Thresholder thresholder,
-                BlobDetector detector, BeadFilter beadFilter) {
-        this.loader = loader;
-        this.thresholder = thresholder;
-        this.detector = detector;
-        this.beadFilter = beadFilter;
-    }
-
     public static void main(String[] args) {
-        ImageLoader loader = new FilesystemImageLoader();
-        Thresholder thresholder = new GrayscaleBinaryThresholder();
-        BlobDetector detector = new BlobFinder();
-        BeadFilter beadFilter = new SizeBasedBeadFilter(25);
+        String directoryPath = "data/run_1";
+        ImageProcessor imgp = new ImageProcessor();
 
-        Main pipeline = new Main(loader, thresholder, detector, beadFilter);
-        pipeline.run("frame00001.jpg");
-    }
+        File directory = new File(directoryPath);
+        File[] files = directory.listFiles();
 
-    public void run(String filename) {
-        Picture image = loader.load(filename);
-        Picture binary = thresholder.apply(image, 180);
+        if (files == null) {
+            System.out.println("Could not read directory.");
+            return;
+        }
 
-        ArrayList<Blob> blobs = (ArrayList<Blob>) detector.detect(binary);
+        BeadTracker bdt = new BeadTracker();
 
-        ArrayList<Blob> beads = (ArrayList<Blob>) beadFilter.apply(blobs);
-        for (Blob b : beads) {
-            System.out.println(b);
+        for (int i = 0; i < files.length - 1; i++) {
+
+            if (!files[i].isFile() || !files[i + 1].isFile()) {
+                continue;
+            }
+
+            Picture result1 = imgp.applyTau(new Picture(files[i].getPath()), 180);
+            Picture result2 = imgp.applyTau(new Picture(files[i + 1].getPath()), 180);
+
+            ArrayList<Double> dists = bdt.minDistance(result1, result2, 30, 25);
+            System.out.println(dists.size());
+
+            System.out.println(
+                    files[i].getName() + " -> " + files[i + 1].getName());
+
+            for (double distance : dists) {
+                System.out.printf("%.4f%n", distance);
+            }
+
+            System.out.println("--------------------");
         }
     }
 }
-
