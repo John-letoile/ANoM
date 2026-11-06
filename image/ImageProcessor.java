@@ -4,10 +4,6 @@ import lib.Picture;
 import java.awt.Color;
 
 public class ImageProcessor {
-    public Picture loadImage(String name) {
-        return new Picture(name);
-    }
-
     public Picture applyTau(Picture image, double tau) {
         Picture result = new Picture(image.width(), image.height());
 

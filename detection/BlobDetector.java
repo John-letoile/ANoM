@@ -1,5 +1,6 @@
 package detection;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import java.awt.Color;
@@ -7,7 +8,7 @@ import lib.Picture;
 import model.Blob;
 
 public class BlobDetector {
-    public ArrayList<Blob> findBlobs(Picture image) {
+    public List<Blob> findBlobs(Picture image) {
         ArrayList<Blob> blobs = new ArrayList<>();
         boolean[][] visited = new boolean[image.width()][image.height()];
 

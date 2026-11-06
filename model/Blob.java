@@ -22,11 +22,11 @@ public class Blob {
         return mass;
     }
 
-    private double getX() {
+    public double getX() {
         return sumX / mass;
     }
 
-    private double getY() {
+    public double getY() {
         return sumY / mass;
     }
 

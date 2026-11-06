@@ -3,11 +3,11 @@ package physics;
 import java.util.List;
 
 public class PhysicalCalc {
-    public static double calculateVariance(List<Double> data) {
+    public static double calculateDiffusionCoefficient(List<Double> data) {
         double sumSquared = 0.0;
 
         for (double datum : data) {
-            datum = datum * Constants.pixelToMeterRatio;
+            datum = datum * Constants.PIXEL_TO_METER_RATIO;
             sumSquared += (datum * datum);
         }
 
@@ -15,11 +15,11 @@ public class PhysicalCalc {
     }
 
     public static double findBoltzmannConstant(double DispersionConstant) {
-        return (6 * Math.PI * Constants.viscosity * Constants.beadRadius * DispersionConstant)
-                / Constants.roomTemperature;
+        return (6 * Math.PI * Constants.VISCOSITY * Constants.BEAD_RADIUS * DispersionConstant)
+                / Constants.ROOM_TEMPERATURE;
     }
 
     public static double findAvogadro(double BoltzmannConstant) {
-        return Constants.universalGasConstant / BoltzmannConstant;
+        return Constants.UNIVERSAL_GAS_CONSTANT / BoltzmannConstant;
     }
 }

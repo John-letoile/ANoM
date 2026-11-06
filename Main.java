@@ -1,76 +1,119 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import image.ImageProcessor;
+import io.DisplacementIO;
 import lib.Picture;
+import physics.PhysicalCalc;
 import tracking.BeadTracker;
-import java.io.File;
-import java.util.Comparator;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import java.io.FileNotFoundException;
-
-import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        // Get directory path
-        String directoryPath = args[0];
-        File directory = new File(args[0]);
-        File[] files = directory.listFiles();
+    private static final double TAU = 180.94;
+    private static final int MIN_PIXELS = 25;
+    private static final int MIN_BLOB_MASS = 25;
 
-        if (files == null) {
-            System.out.println("Could not read directory: " + directoryPath);
+    private static final String OUTPUT_FILE = "displacements.txt";
+
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            System.err.println("Please provide an image directory.");
             return;
         }
 
-        files = Arrays.stream(files)
-                .filter(f -> f.isFile() && f.getName().endsWith(".jpg"))
-                .toArray(File[]::new);
+        File directory = new File(args[0]);
+
+        if (!directory.isDirectory()) {
+            System.err.println("Invalid directory: " + args[0]);
+            return;
+        }
+
+        // Initialize components
+        ImageProcessor imageProcessor = new ImageProcessor();
+        BeadTracker beadTracker = new BeadTracker();
+
+        // Retrieve images
+        List<File> images = getImages(directory);
+
+        if (images.size() < 2) {
+            System.err.println("At least two images are required.");
+            return;
+        }
+
+        // Calculate displacements
+        List<Double> displacements =
+                calculateDisplacements(images, imageProcessor, beadTracker);
+
+        if (displacements.isEmpty()) {
+            System.err.println("No displacement measurements found.");
+            return;
+        }
+
+        // Save measurements
+        DisplacementIO.write(displacements, OUTPUT_FILE);
+
+        // Calculate physical constants
+        double diffusion =
+                PhysicalCalc.calculateDiffusionCoefficient(displacements);
+
+        double boltzmann =
+                PhysicalCalc.findBoltzmannConstant(diffusion);
+
+        double avogadro =
+                PhysicalCalc.findAvogadro(boltzmann);
+
+        // Display results
+        System.out.println("Diffusion coefficient: " + diffusion);
+        System.out.println("Boltzmann constant: " + boltzmann);
+        System.out.println("Avogadro constant: " + avogadro);
+    }
+
+    private static List<File> getImages(File directory) {
+
+        File[] files = directory.listFiles(
+                file -> file.isFile() &&
+                        file.getName().toLowerCase().endsWith(".jpg")
+        );
+
+        if (files == null) {
+            return List.of();
+        }
 
         Arrays.sort(files, Comparator.comparing(File::getName));
 
-        // Initialize pipeline
-        BeadTracker bdt = new BeadTracker();
-        ImageProcessor imgp = new ImageProcessor();
+        return Arrays.asList(files);
+    }
 
-        // Write displacement data to file
-        try (PrintWriter writer = new PrintWriter(new FileWriter("displacements.txt"))) {
-            for (int i = 0; i < files.length - 1; i++) {
-                Picture result1 = new Picture(files[i].getPath());
-                Picture result2 = new Picture(files[i + 1].getPath());
-                double tau = 180.94;
+    private static List<Double> calculateDisplacements(
+            List<File> images,
+            ImageProcessor imageProcessor,
+            BeadTracker beadTracker) {
 
-                ArrayList<Double> dists = bdt.minDistance(imgp.applyTau(result1, tau),
-                        imgp.applyTau(result2, tau), 25,
-                        25);
+        List<Double> displacements = new ArrayList<>();
 
-                for (double distance : dists) {
-                    writer.printf("%.4f%n", distance);
-                }
-            }
+        for (int i = 0; i < images.size() - 1; i++) {
 
-        } catch (IOException e) {
-            System.err.println("Could not write displacement data: " + e.getMessage());
+            Picture image1 = new Picture(images.get(i).getPath());
+            Picture image2 = new Picture(images.get(i + 1).getPath());
+
+            Picture processed1 =
+                    imageProcessor.applyTau(image1, TAU);
+
+            Picture processed2 =
+                    imageProcessor.applyTau(image2, TAU);
+
+            displacements.addAll(
+                    beadTracker.minDistance(
+                            processed1,
+                            processed2,
+                            MIN_PIXELS,
+                            MIN_BLOB_MASS
+                    )
+            );
         }
 
-        // Read displacement data from file
-        ArrayList<Double> numbers = new ArrayList<>();
-        try (Scanner scanner = new Scanner(new File("displacements.txt"))) {
-            while (scanner.hasNextDouble()) {
-                numbers.add(scanner.nextDouble());
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found.");
-        }
-
-        // Find dispersion constant, Boltzmann constant, and Avogadro's number
-        double dispersionConstant = physics.PhysicalCalc.calculateVariance(numbers);
-        double BoltzmannConstant = physics.PhysicalCalc.findBoltzmannConstant(dispersionConstant);
-        double AvogadroConstant = physics.PhysicalCalc.findAvogadro(BoltzmannConstant);
-        System.out.println(BoltzmannConstant);
-        System.out.println(AvogadroConstant);
+        return displacements;
     }
 }
