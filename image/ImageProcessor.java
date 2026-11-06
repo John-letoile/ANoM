@@ -8,23 +8,19 @@ public class ImageProcessor {
         return new Picture(name);
     }
 
-    public Picture applyTau(Picture image, int tau) {
+    public Picture applyTau(Picture image, double tau) {
         Picture result = new Picture(image.width(), image.height());
-
 
         for (int x = 0; x < image.width(); x++) {
             for (int y = 0; y < image.height(); y++) {
                 Color pixel = image.get(x, y);
-                int intensity = (int) Math.round(
-                0.299 * pixel.getRed() +
-                0.587 * pixel.getGreen() +
-                0.114 * pixel.getBlue()
-                );
+                Double intensity = 0.299 * pixel.getRed() +
+                        0.587 * pixel.getGreen() +
+                        0.114 * pixel.getBlue();
 
-                if (intensity > tau) {
+                if (intensity >= tau) {
                     result.set(x, y, Color.WHITE);
-                }
-                else {
+                } else {
                     result.set(x, y, Color.BLACK);
                 }
             }

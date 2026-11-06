@@ -1,9 +1,8 @@
 package detection;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import java.awt.Color;
 import lib.Picture;
 import model.Blob;
 
@@ -26,10 +25,10 @@ public class BlobDetector {
     }
 
     private void dfs(int x, int y, Picture image,
-                    boolean[][] visited, Blob blob) {
+            boolean[][] visited, Blob blob) {
 
         if (x < 0 || x >= image.width() ||
-            y < 0 || y >= image.height()) {
+                y < 0 || y >= image.height()) {
             return;
         }
 

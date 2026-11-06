@@ -16,9 +16,9 @@ public class BeadTracker {
         ArrayList<Blob> beadPrev = bdf.getBeads(min, bbf.findBlobs(pic1));
         ArrayList<Blob> beadCurrent = bdf.getBeads(min, bbf.findBlobs(pic2));
 
-        for (Blob beadP : beadPrev) {
-            for (Blob beadC : beadCurrent) {
-                tempDist.add(beadP.distanceTo(beadC));
+        for (Blob beadC : beadCurrent) {
+            for (Blob beadP : beadPrev) {
+                tempDist.add(beadC.distanceTo(beadP));
             }
 
             tempDist.sort(Comparator.naturalOrder());

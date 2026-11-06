@@ -2,13 +2,12 @@ package detection;
 
 import java.util.ArrayList;
 
-import lib.Picture;
 import model.Blob;
 
 public class BeadFinder {
     public ArrayList<Blob> getBeads(int min, ArrayList<Blob> blobs) {
         for (int i = blobs.size() - 1; i >= 0; i--) {
-            if (blobs.get(i).size() < min) {
+            if (blobs.get(i).getMass() < min) {
                 blobs.remove(i);
             }
         }
