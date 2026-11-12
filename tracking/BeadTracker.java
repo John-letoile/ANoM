@@ -2,7 +2,6 @@ package tracking;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Comparator;
 
 import detection.*;
 import lib.Picture;
