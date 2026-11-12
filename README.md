@@ -23,6 +23,13 @@ The analysis pipeline consists of the following steps:
     constant, and Avogadro constant.
 7. **Data export:** Save displacement measurements to a text file.
 
+## Class Architecture
+
+The following diagram shows the main classes, their responsibilities, and
+the relationships between the application components.
+
+![Class architecture](class-architecture.jpg)
+
 ## Project Structure
 
 ``` text
@@ -57,8 +64,6 @@ The analysis pipeline consists of the following steps:
   `physics`     Physical constants and mathematical calculations
   `io`          Reading and writing displacement measurements
   `lib`         Image representation and pixel manipulation
-
-## Implementation Details
 
 ### Image Processing
 
@@ -129,7 +134,7 @@ from $N$ independent displacement measurements over a common time
 interval $\Delta t$:
 
 $$
-D = \frac{1}{4N\Delta t}
+D = \frac{1}{2N\Delta t}
 \sum_{i=1}^{N}
 \left[(\Delta x_i)^2+(\Delta y_i)^2\right]
 $$
@@ -163,31 +168,21 @@ where $R$ is the universal gas constant.
 
 The analysis parameters are defined in `Main.java`:
 
-  ------------------------------------------------------------------------
-  Parameter                            Current value Description
-  --------------------- ---------------------------- ---------------------
-  `TAU`                                     `180.94` Grayscale intensity
-                                                     threshold
-
-  `MIN_PIXELS`                                  `25` Minimum
-                                                     pixel-distance
-                                                     threshold used by the
-                                                     tracker
-
-`MIN_BLOB_MASS`                               `25` Minimum number of
-                                                     pixels required for a
-                                                     detected bead
-  ------------------------------------------------------------------------
+| Parameter | Current value | Description |
+|---|---:|---|
+| `TAU` | `180.94` | Grayscale intensity threshold |
+| `MIN_PIXELS` | `25` | Minimum pixel-distance threshold used by the tracker |
+| `MIN_BLOB_MASS` | `25` | Minimum number of pixels required for a detected bead |
 
 Physical constants are defined in `physics/Constants.java`:
 
-  Constant                                         Value
-  ------------------------ -----------------------------
-  Pixel-to-meter ratio            $0.175 \times 10^{-6}$
-  Room temperature                               $297$ K
-  Dynamic viscosity          $9.135 \times 10^{-4}$ Pa·s
-  Bead radius                     $0.5 \times 10^{-6}$ m
-  Universal gas constant             $8.31446$ J/(mol·K)
+| Constant | Value |
+|---|---:|
+| Pixel-to-meter ratio | $0.175 \\times 10^{-6}$ |
+| Room temperature | $297$ K |
+| Dynamic viscosity | $9.135 \\times 10^{-4}$ Pa·s |
+| Bead radius | $0.5 \\times 10^{-6}$ m |
+| Universal gas constant | $8.31446$ J/(mol·K) |
 
 Adjust these values to match the experimental setup. In particular,
 ensure that the pixel-to-meter ratio, frame interval, temperature,

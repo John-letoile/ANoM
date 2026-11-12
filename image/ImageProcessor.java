@@ -9,8 +9,7 @@ public class ImageProcessor {
 
         for (int x = 0; x < image.width(); x++) {
             for (int y = 0; y < image.height(); y++) {
-                Color pixel = image.get(x, y);
-                Double intensity = 0.299 * pixel.getRed() +
+                Double intensity = 0.299 * image.getARGB(x, y).getRed() +
                         0.587 * pixel.getGreen() +
                         0.114 * pixel.getBlue();
 
