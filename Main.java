@@ -1,14 +1,12 @@
+import interfaces.*;
+import io.DisplacementIO;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-
-import image.ImageProcessor;
-import io.DisplacementIO;
 import lib.Picture;
 import physics.PhysicalCalc;
-import tracking.BeadTracker;
 
 public class Main {
     private static final double TAU = 180.94;
@@ -31,8 +29,8 @@ public class Main {
         }
 
         // Initialize components
-        ImageProcessor imageProcessor = new ImageProcessor();
-        BeadTracker beadTracker = new BeadTracker();
+        IImageProcessor imageProcessor = IFactory.createImageProcessor();
+        IBeadTracker beadTracker = IFactory.createBeadTracker();
 
         // Retrieve images
         List<File> images = getImages(directory);
@@ -88,8 +86,8 @@ public class Main {
 
     private static List<Double> calculateDisplacements(
             List<File> images,
-            ImageProcessor imageProcessor,
-            BeadTracker beadTracker) {
+            IImageProcessor imageProcessor,
+            IBeadTracker beadTracker) {
 
         List<Double> displacements = new ArrayList<>();
 

@@ -1,9 +1,10 @@
 package image;
 
-import lib.Picture;
+import interfaces.IImageProcessor;
 import java.awt.Color;
+import lib.Picture;
 
-public class ImageProcessor {
+public class ImageProcessor implements IImageProcessor {
     public Picture applyTau(Picture image, double tau) {
         Picture result = new Picture(image.width(), image.height());
 
