@@ -1,6 +1,8 @@
 package model;
 
-public class Blob {
+import interfaces.IBlob;
+
+public class Blob implements IBlob {
     private double sumX;
     private double sumY;
     private int mass;
@@ -30,7 +32,7 @@ public class Blob {
         return sumY / mass;
     }
 
-    public double distanceTo(Blob other) {
+    public double distanceTo(IBlob other) {
         double dx = this.getX() - other.getX();
         double dy = this.getY() - other.getY();
         return Math.hypot(dx, dy);

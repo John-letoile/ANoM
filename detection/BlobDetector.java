@@ -1,21 +1,22 @@
 package detection;
 
-import java.util.List;
-import java.util.ArrayList;
-
+import interfaces.IBlob;
+import interfaces.IBlobDetector;
+import interfaces.IFactory;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import lib.Picture;
-import model.Blob;
 
-public class BlobDetector {
-    public List<Blob> findBlobs(Picture image) {
-        ArrayList<Blob> blobs = new ArrayList<>();
+public class BlobDetector implements IBlobDetector{
+    public List<IBlob> findBlobs(Picture image){
+        ArrayList<IBlob> blobs = new ArrayList<>();
         boolean[][] visited = new boolean[image.width()][image.height()];
 
         for (int x = 0; x < image.width(); x++) {
             for (int y = 0; y < image.height(); y++) {
                 if (isForeground(image.get(x, y)) && !visited[x][y]) {
-                    Blob blob = new Blob();
+                    IBlob blob = IFactory.createBlob();
                     dfs(x, y, image, visited, blob);
                     blobs.add(blob);
                 }
@@ -26,7 +27,7 @@ public class BlobDetector {
     }
 
     private void dfs(int x, int y, Picture image,
-            boolean[][] visited, Blob blob) {
+            boolean[][] visited, IBlob blob) {
 
         if (x < 0 || x >= image.width() ||
                 y < 0 || y >= image.height()) {
